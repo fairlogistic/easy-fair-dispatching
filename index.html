@@ -1,0 +1,97 @@
+from IPython.display import display, HTML
+
+html_code = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Easy-Fair Dispatching</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .toggle-group {
+            margin-top: 10px;
+        }
+        .submit-btn {
+            margin-top: 30px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Easy-Fair Dispatching</h1>
+
+    <label for="recipient">Select Recipient</label>
+    <select id="recipient">
+        <option value="alice">Alice Smith - (123) 456-7890</option>
+        <option value="bob">Bob Johnson - (987) 654-3210</option>
+    </select>
+
+    <label for="address">Select Address</label>
+    <select id="address">
+        <option value="123-main">123 Main St, Springfield</option>
+        <option value="456-oak">456 Oak Ave, Rivertown</option>
+    </select>
+
+    <label>Pickup or Dropoff</label>
+    <div class="toggle-group">
+        <input type="radio" id="pickup" name="taskType" value="pickup" checked>
+        <label for="pickup">Pickup</label>
+        <input type="radio" id="dropoff" name="taskType" value="dropoff">
+        <label for="dropoff">Dropoff</label>
+    </div>
+
+    <label for="notes">Delivery Notes (Optional)</label>
+    <textarea id="notes" rows="4" placeholder="e.g. Leave at the back door"></textarea>
+
+    <button class="submit-btn" onclick="submitTask()">Create Task</button>
+
+    <script>
+        function submitTask() {
+            const recipient = document.getElementById('recipient').value;
+            const address = document.getElementById('address').value;
+            const taskType = document.querySelector('input[name="taskType"]:checked').value;
+            const notes = document.getElementById('notes').value;
+
+            const taskData = {
+                recipient,
+                address,
+                taskType,
+                notes
+            };
+
+            alert('Task Created (Simulation):\\n' + JSON.stringify(taskData, null, 2));
+            // Later: send taskData to backend API
+        }
+    </script>
+</body>
+</html>
+"""
+
+display(HTML(html_code))
