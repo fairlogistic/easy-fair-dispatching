@@ -115,29 +115,35 @@
         <option value="jacob-bettencourt">Jacob Bettencourt</option>
         <option value="doug-shane">DOUG SHANE</option>
         <option value="eric-alfiere">ERIC ALFIERE</option>
-        <option value="matthew-valentino">MATTHEW VALENTINO</option>
-        <option value="david-carmichael">DAVID CARMICHAEL</option>
     </select>
 
-    <label for="case-number">Case Number</label>
-    <input type="text" id="case-number" placeholder="Enter case number">
+    <label for="destination">Select Destination</label>
+    <select id="destination">
+        <option value="" disabled selected>Select a destination</option>
+        <option value="baystate-med-ctr">BAYSTATE MED CTR</option>
+        <option value="bridgeport-hosp">BRIDGEPORT HOSP</option>
+        <option value="hartford-hosp">HARTFORD HOSP</option>
+        <option value="glens-falls-hosp">GLENS FALLS HOSP</option>
+        <option value="midstate-med-ctr">MIDSTATE MED CTR</option>
+        <option value="branford-surg-ctr">BRANFORD SURG CTR</option>
+        <option value="charlotte-hungerford-hosp">CHARLOTTE HUNGERFORD HOSP</option>
+        <option value="lighthouse-surg-ctr">LIGHTHOUSE SURG CTR LLC</option>
+        <option value="manchester-memorial-hosp">MANCHESTER MEMORIAL HOSP</option>
+        <option value="bridgeport-hosp-milford">BRIDGEPORT HOSP MILFORD CAMPUS</option>
+        <option value="st-francis-hosp">ST FRANCIS HOSP AND MED CTR</option>
+        <option value="saratoga-hosp">SARATOGA HOSP</option>
+        <option value="clifton-park-asc">CLIFTON PARK ASC, LLC</option>
+        <option value="columbia-memorial-hosp">COLUMBIA MEMORIAL HOSP</option>
+        <option value="william-backus-hosp">WILLIAM BACKUS HOSP</option>
+        <option value="windham-hosp">WINDHAM HOSP</option>
+        <option value="danbury-hosp">DANBURY HOSP</option>
+        <option value="hss-stamford">HSS STAMFORD</option>
+        <option value="stamford-asc">STAMFORD ASC LLC</option>
+        <option value="brattleboro-memorial-hosp">BRATTLEBORO MEMORIAL HOSP</option>
+        <option value="griffin-hosp">GRIFFIN HOSP</option>
+    </select>
 
-    <label>Pickup or Dropoff</label>
-    <div class="toggle-group">
-        <label>
-            <input type="radio" id="pickup" name="taskType" value="pickup" checked>
-            Pickup
-        </label>
-        <label>
-            <input type="radio" id="dropoff" name="taskType" value="dropoff">
-            Dropoff
-        </label>
-    </div>
-
-    <label for="notes">Delivery Notes (Optional)</label>
-    <textarea id="notes" rows="4" placeholder="e.g. Leave at the back door"></textarea>
-
-    <button class="submit-btn" onclick="submitTask()">Create Task</button>
+    <button class="submit-btn">Create Task</button>
 </div>
 
 </body>
