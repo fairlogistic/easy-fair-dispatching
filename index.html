@@ -63,6 +63,10 @@
         <option value="456-oak">456 Oak Ave, Rivertown</option>
     </select>
 
+    <!-- Case Number field moved here -->
+    <label for="case-number">Case Number</label>
+    <input type="text" id="case-number" placeholder="Enter case number">
+
     <label>Pickup or Dropoff</label>
     <div class="toggle-group">
         <label>
@@ -84,12 +88,14 @@
         function submitTask() {
             const recipient = document.getElementById('recipient').value;
             const address = document.getElementById('address').value;
+            const caseNumber = document.getElementById('case-number').value;
             const taskType = document.querySelector('input[name="taskType"]:checked').value;
             const notes = document.getElementById('notes').value;
 
             const taskData = {
                 recipient,
                 address,
+                caseNumber,
                 taskType,
                 notes
             };
