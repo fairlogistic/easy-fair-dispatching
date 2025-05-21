@@ -5,16 +5,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f9;
+            margin: 40px auto;
+            padding: 20px;
+            max-width: 600px;
+            background-color: #f0f4f8;
         }
         h1 {
-            color: #333;
+            color: #003366;
+            text-align: center;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 10px;
         }
         label {
             display: block;
             margin-top: 20px;
             font-weight: bold;
+            color: #003366;
         }
         select, input[type="text"], textarea {
             width: 100%;
@@ -22,6 +28,7 @@
             margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            background-color: #ffffff;
         }
         .toggle-group {
             display: flex;
@@ -32,23 +39,39 @@
             display: inline-flex;
             align-items: center;
             font-weight: normal;
+            background-color: #dbe3eb;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .toggle-group input[type="radio"] {
+            margin-right: 8px;
         }
         .submit-btn {
             margin-top: 30px;
-            background-color: #4CAF50;
+            background-color: #003366;
             color: white;
             padding: 12px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            width: 100%;
         }
         .submit-btn:hover {
-            background-color: #45a049;
+            background-color: #00509e;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
+
+<div class="container">
     <h1>Easy-Fair Dispatching</h1>
 
     <label for="recipient">Select Recipient</label>
@@ -63,7 +86,6 @@
         <option value="456-oak">456 Oak Ave, Rivertown</option>
     </select>
 
-    <!-- Case Number field moved here -->
     <label for="case-number">Case Number</label>
     <input type="text" id="case-number" placeholder="Enter case number">
 
@@ -83,26 +105,28 @@
     <textarea id="notes" rows="4" placeholder="e.g. Leave at the back door"></textarea>
 
     <button class="submit-btn" onclick="submitTask()">Create Task</button>
+</div>
 
-    <script>
-        function submitTask() {
-            const recipient = document.getElementById('recipient').value;
-            const address = document.getElementById('address').value;
-            const caseNumber = document.getElementById('case-number').value;
-            const taskType = document.querySelector('input[name="taskType"]:checked').value;
-            const notes = document.getElementById('notes').value;
+<script>
+    function submitTask() {
+        const recipient = document.getElementById('recipient').value;
+        const address = document.getElementById('address').value;
+        const caseNumber = document.getElementById('case-number').value;
+        const taskType = document.querySelector('input[name="taskType"]:checked').value;
+        const notes = document.getElementById('notes').value;
 
-            const taskData = {
-                recipient,
-                address,
-                caseNumber,
-                taskType,
-                notes
-            };
+        const taskData = {
+            recipient,
+            address,
+            caseNumber,
+            taskType,
+            notes
+        };
 
-            alert('Task Created (Simulation):\\n' + JSON.stringify(taskData, null, 2));
-            // Later: send taskData to backend API
-        }
-    </script>
+        alert('Task Created (Simulation):\\n' + JSON.stringify(taskData, null, 2));
+        // Later: send taskData to backend API
+    }
+</script>
+
 </body>
 </html>
