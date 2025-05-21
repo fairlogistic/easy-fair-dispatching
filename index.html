@@ -24,7 +24,14 @@
             border-radius: 4px;
         }
         .toggle-group {
+            display: flex;
+            gap: 15px;
             margin-top: 10px;
+        }
+        .toggle-group label {
+            display: inline-flex;
+            align-items: center;
+            font-weight: normal;
         }
         .submit-btn {
             margin-top: 30px;
@@ -58,10 +65,14 @@
 
     <label>Pickup or Dropoff</label>
     <div class="toggle-group">
-        <input type="radio" id="pickup" name="taskType" value="pickup" checked>
-        <label for="pickup">Pickup</label>
-        <input type="radio" id="dropoff" name="taskType" value="dropoff">
-        <label for="dropoff">Dropoff</label>
+        <label>
+            <input type="radio" id="pickup" name="taskType" value="pickup" checked>
+            Pickup
+        </label>
+        <label>
+            <input type="radio" id="dropoff" name="taskType" value="dropoff">
+            Dropoff
+        </label>
     </div>
 
     <label for="notes">Delivery Notes (Optional)</label>
