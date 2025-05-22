@@ -28,6 +28,20 @@
             font-weight: bold;
             color: #003366;
         }
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #ffffff;
+        }
+        textarea {
+            height: 150px; /* Larger Destination Notes box */
+        }
+        #team {
+            height: 50px; /* Enlarged Team selection dropdown */
+            font-size: 18px;
+        }
         .search-wrapper {
             position: relative;
             width: 100%;
@@ -105,6 +119,9 @@
         <option value="test-team-id">Test Team</option>
     </select>
 
+    <label for="destination-notes">Destination Notes (Optional)</label>
+    <textarea id="destination-notes" placeholder="e.g. Use main entrance"></textarea>
+
     <label for="case-number">Case Number</label>
     <input type="text" id="case-number" placeholder="Enter case number">
 
@@ -142,6 +159,49 @@ document.addEventListener("click", function(event) {
         });
     }
 });
+
+function submitTask() {
+    const apiKey = "YOUR_ONFLEET_API_KEY"; // Replace with actual API key
+    const teamId = document.getElementById('team').value; // Get selected team (Test Team)
+
+    const recipient = document.getElementById('recipient').value;
+    const destination = document.getElementById('destination').value;
+    const destinationNotes = document.getElementById('destination-notes').value;
+    const caseNumber = document.getElementById('case-number').value;
+    const taskType = document.querySelector('input[name="taskType"]:checked').value;
+    const notes = document.getElementById('notes').value;
+
+    const taskData = {
+        destination: {
+            address: destination,
+            notes: destinationNotes
+        },
+        recipients: [{
+            name: recipient
+        }],
+        notes: notes,
+        pickupTask: taskType === "pickup",
+        metadata: [{ name: "Case Number", value: caseNumber, type: "string" }],
+        team: teamId // Assign the task to the selected team
+    };
+
+    fetch("https://onfleet.com/api/v2/tasks", {
+        method: "POST",
+        headers: {
+            "Authorization": "Basic " + btoa(apiKey + ":"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(taskData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Task Created Successfully!\n" + JSON.stringify(data, null, 2));
+    })
+    .catch(error => {
+        console.error("Error creating task:", error);
+        alert("Failed to create task. Please check the API key and input data.");
+    });
+}
 </script>
 
 </body>
