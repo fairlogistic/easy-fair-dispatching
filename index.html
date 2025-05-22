@@ -28,21 +28,34 @@
             font-weight: bold;
             color: #003366;
         }
-        select, input[type="text"], textarea {
+        .search-wrapper {
+            position: relative;
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #ffffff;
         }
         .search-box {
             width: 100%;
             padding: 8px;
-            margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
             background-color: #ffffff;
+        }
+        .search-dropdown {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            z-index: 1000;
+        }
+        .search-dropdown option {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .search-dropdown option:hover {
+            background-color: #f0f4f8;
         }
         .submit-btn {
             margin-top: 30px;
@@ -65,29 +78,27 @@
 <div class="container">
     <h1>Fair Dispatching</h1>
 
-    <label for="recipient-search">Search Recipient</label>
-    <input type="text" id="recipient-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search', 'recipient')">
-    
-    <label for="recipient">Select Recipient</label>
-    <select id="recipient">
-        <option value="" disabled selected>Select a recipient</option>
-        <option value="jason-doering">JASON DOERING</option>
-        <option value="william-alfiere">WILLIAM ALFIERE</option>
-        <option value="chris-fazio">CHRIS FAZIO</option>
-        <option value="thomas-cook">THOMAS COOK</option>
-    </select>
+    <label for="recipient-search">Select Recipient</label>
+    <div class="search-wrapper">
+        <input type="text" id="recipient-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search', 'recipient')">
+        <select id="recipient" class="search-dropdown">
+            <option value="jason-doering">JASON DOERING</option>
+            <option value="william-alfiere">WILLIAM ALFIERE</option>
+            <option value="chris-fazio">CHRIS FAZIO</option>
+            <option value="thomas-cook">THOMAS COOK</option>
+        </select>
+    </div>
 
-    <label for="destination-search">Search Destination</label>
-    <input type="text" id="destination-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('destination-search', 'destination')">
-
-    <label for="destination">Select Destination</label>
-    <select id="destination">
-        <option value="" disabled selected>Select a destination</option>
-        <option value="baystate-med-ctr">BAYSTATE MED CTR</option>
-        <option value="bridgeport-hosp">BRIDGEPORT HOSP</option>
-        <option value="hartford-hosp">HARTFORD HOSP</option>
-        <option value="glens-falls-hosp">GLENS FALLS HOSP</option>
-    </select>
+    <label for="destination-search">Select Destination</label>
+    <div class="search-wrapper">
+        <input type="text" id="destination-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('destination-search', 'destination')">
+        <select id="destination" class="search-dropdown">
+            <option value="baystate-med-ctr">BAYSTATE MED CTR</option>
+            <option value="bridgeport-hosp">BRIDGEPORT HOSP</option>
+            <option value="hartford-hosp">HARTFORD HOSP</option>
+            <option value="glens-falls-hosp">GLENS FALLS HOSP</option>
+        </select>
+    </div>
 
     <label for="team">Select Team</label>
     <select id="team">
@@ -117,10 +128,20 @@
 function filterDropdown(searchId, dropdownId) {
     const searchInput = document.getElementById(searchId).value.toLowerCase();
     const dropdown = document.getElementById(dropdownId);
+    dropdown.style.display = searchInput ? "block" : "none"; // Show dropdown when typing
     for (const option of dropdown.options) {
         option.style.display = option.text.toLowerCase().includes(searchInput) ? "block" : "none";
     }
 }
+
+// Auto-hide dropdown when clicking elsewhere
+document.addEventListener("click", function(event) {
+    if (!event.target.matches(".search-box")) {
+        document.querySelectorAll(".search-dropdown").forEach(dropdown => {
+            dropdown.style.display = "none";
+        });
+    }
+});
 </script>
 
 </body>
