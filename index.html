@@ -168,7 +168,7 @@ function filterDropdown(inputId, dropdownId) {
 
     if (query.length < 3) return; // Only search when at least 3 characters are typed
 
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=us&limit=5&extratags=1`)
+ fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=us&limit=5&extratags=1&category=health`)
         .then(response => response.json())
         .then(data => {
             const resultsDropdown = document.getElementById(resultsId);
