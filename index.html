@@ -35,25 +35,6 @@
             border-radius: 4px;
             background-color: #ffffff;
         }
-        .dropdown-wrapper {
-            position: relative;
-        }
-        .search-input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #ffffff;
-        }
-        .dropdown {
-            width: 100%;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #ffffff;
-        }
         .submit-btn, .add-stop-btn {
             margin-top: 15px;
             background-color: #003366;
@@ -75,6 +56,25 @@
 <div class="container">
     <h1>Fair Dispatching</h1>
 
+    <label for="team">Select Team</label>
+    <select id="team">
+        <option value="~1uUPDmdOUKYphe447YeoQJC">Test Team</option>
+    </select>
+
+    <label for="case-number">Case Number</label>
+    <input type="text" id="case-number" placeholder="Enter case number">
+
+    <label>Pickup or Dropoff</label>
+    <div class="toggle-group">
+        <label>
+            <input type="radio" name="taskType" value="pickup" checked> Pickup
+        </label>
+        <label>
+            <input type="radio" name="taskType" value="dropoff"> Dropoff
+        </label>
+    </div>
+
+    <!-- Stops Section -->
     <div id="stops-container">
         <div class="stop">
             <label for="recipient-1">Select Recipient</label>
@@ -87,7 +87,7 @@
 
             <label for="destination-1">Search Destination</label>
             <input type="text" id="destination-1" placeholder="Type hospital name..." oninput="searchLocation(this)">
-            <select id="destination-results-1" class="dropdown" size="5"></select>
+            <select id="destination-results-1" size="5"></select>
             <input type="text" id="destination-address-1" placeholder="Address will auto-fill..." readonly>
 
             <label for="notes-1">Delivery Notes (Optional)</label>
@@ -96,24 +96,6 @@
     </div>
 
     <button id="add-stop-btn" class="add-stop-btn" onclick="addStop()">➕ Add Stop</button>
-
-    <label for="team">Select Team</label>
-    <select id="team">
-        <option value="~1uUPDmdOUKYphe447YeoQJC">Test Team</option>
-    </select>
-
-    <label for="case-number">Case Number</label>
-    <input type="text" id="case-number" placeholder="Enter case number">
-
-    <label>Pickup or Dropoff</label>
-    <div class="toggle-group">
-        <label>
-            <input type="radio" id="pickup" name="taskType" value="pickup" checked> Pickup
-        </label>
-        <label>
-            <input type="radio" id="dropoff" name="taskType" value="dropoff"> Dropoff
-        </label>
-    </div>
 
     <button class="submit-btn" onclick="submitTask()">Create Task</button>
 </div>
@@ -139,7 +121,7 @@ function addStop() {
 
         <label for="destination-${stopCount}">Search Destination</label>
         <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." oninput="searchLocation(this)">
-        <select id="destination-results-${stopCount}" class="dropdown" size="5"></select>
+        <select id="destination-results-${stopCount}" size="5"></select>
         <input type="text" id="destination-address-${stopCount}" placeholder="Address will auto-fill..." readonly>
 
         <label for="notes-${stopCount}">Delivery Notes (Optional)</label>
@@ -184,7 +166,7 @@ function submitTask() {
     const apiKey = "60670ecfb8870f29baa81e525f7d2187";
     const teamId = document.getElementById('team').value;
     const caseNumber = document.getElementById('case-number').value;
-    const taskType = document.querySelector('input[name="taskType"]:checked').value;
+    const taskType = document.querySelector('input[name="taskType"]:checked").value;
 
     const stops = [];
     for (let i = 1; i <= stopCount; i++) {
