@@ -106,6 +106,8 @@
 <script>
 let stopCount = 1;
 
+let stopCount = 1;
+
 function addStop() {
     stopCount++;
     const stopsContainer = document.getElementById("stops-container");
@@ -134,6 +136,7 @@ function addStop() {
         <textarea id="notes-${stopCount}" rows="4" placeholder="e.g. Use main entrance"></textarea>
     `;
 
+    // Append new stop section to the form
     stopsContainer.appendChild(newStop);
 }
 
