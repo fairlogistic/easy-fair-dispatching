@@ -54,18 +54,18 @@
             border-radius: 4px;
             background-color: #ffffff;
         }
-        .submit-btn {
-            margin-top: 30px;
+        .submit-btn, .add-stop-btn {
+            margin-top: 15px;
             background-color: #003366;
             color: white;
-            padding: 12px 20px;
+            padding: 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
             width: 100%;
         }
-        .submit-btn:hover {
+        .submit-btn:hover, .add-stop-btn:hover {
             background-color: #00509e;
         }
     </style>
@@ -75,21 +75,27 @@
 <div class="container">
     <h1>Fair Dispatching</h1>
 
-    <label for="recipient-search">Select Recipient</label>
-    <div class="dropdown-wrapper">
-        <input type="text" id="recipient-search" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search', 'recipient')">
-        <select id="recipient" class="dropdown">
-            <option value="jason-doering">JASON DOERING</option>
-            <option value="william-alfiere">WILLIAM ALFIERE</option>
-            <option value="chris-fazio">CHRIS FAZIO</option>
-            <option value="thomas-cook">THOMAS COOK</option>
-        </select>
+    <div id="stops-container">
+        <div class="stop">
+            <label for="recipient-1">Select Recipient</label>
+            <select id="recipient-1">
+                <option value="jason-doering">JASON DOERING</option>
+                <option value="william-alfiere">WILLIAM ALFIERE</option>
+                <option value="chris-fazio">CHRIS FAZIO</option>
+                <option value="thomas-cook">THOMAS COOK</option>
+            </select>
+
+            <label for="destination-1">Search Destination</label>
+            <input type="text" id="destination-1" placeholder="Type hospital name..." oninput="searchLocation(this)">
+            <select id="destination-results-1" class="dropdown" size="5"></select>
+            <input type="text" id="destination-address-1" placeholder="Address will auto-fill..." readonly>
+
+            <label for="notes-1">Delivery Notes (Optional)</label>
+            <textarea id="notes-1" rows="4" placeholder="e.g. Use main entrance"></textarea>
+        </div>
     </div>
 
-    <label for="destination">Search Destination (Hospital)</label>
-    <input type="text" id="destination" class="search-input" placeholder="Type hospital name..." oninput="searchLocation()">
-    <select id="destination-results" class="dropdown" size="5"></select>
-    <input type="text" id="destination-address" placeholder="Address will auto-fill..." readonly>
+    <button id="add-stop-btn" class="add-stop-btn" onclick="addStop()">➕ Add Stop</button>
 
     <label for="team">Select Team</label>
     <select id="team">
@@ -113,36 +119,61 @@
 </div>
 
 <script>
-function filterDropdown(searchId, dropdownId) {
-    const searchInput = document.getElementById(searchId).value.toLowerCase();
-    const dropdown = document.getElementById(dropdownId);
+let stopCount = 1;
 
-    for (const option of dropdown.options) {
-        option.style.display = option.text.toLowerCase().includes(searchInput) ? "block" : "none";
-    }
+function addStop() {
+    stopCount++;
+    const stopsContainer = document.getElementById("stops-container");
+
+    const newStop = document.createElement("div");
+    newStop.classList.add("stop");
+
+    newStop.innerHTML = `
+        <label for="recipient-${stopCount}">Select Recipient</label>
+        <select id="recipient-${stopCount}">
+            <option value="jason-doering">JASON DOERING</option>
+            <option value="william-alfiere">WILLIAM ALFIERE</option>
+            <option value="chris-fazio">CHRIS FAZIO</option>
+            <option value="thomas-cook">THOMAS COOK</option>
+        </select>
+
+        <label for="destination-${stopCount}">Search Destination</label>
+        <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." oninput="searchLocation(this)">
+        <select id="destination-results-${stopCount}" class="dropdown" size="5"></select>
+        <input type="text" id="destination-address-${stopCount}" placeholder="Address will auto-fill..." readonly>
+
+        <label for="notes-${stopCount}">Delivery Notes (Optional)</label>
+        <textarea id="notes-${stopCount}" rows="4" placeholder="e.g. Use main entrance"></textarea>
+    `;
+
+    stopsContainer.appendChild(newStop);
 }
 
-function searchLocation() {
-    const query = document.getElementById("destination").value;
+function searchLocation(inputElement) {
+    const query = inputElement.value;
+    const resultsId = inputElement.id.replace("destination-", "destination-results-");
 
-    if (query.length < 3) return; // Only search if 3 or more characters are typed
+    if (query.length < 3) return;
 
     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`)
         .then(response => response.json())
         .then(data => {
-            const resultsDropdown = document.getElementById("destination-results");
-            resultsDropdown.innerHTML = ""; // Clear previous results
+            const resultsDropdown = document.getElementById(resultsId);
+            resultsDropdown.innerHTML = "";
 
             data.forEach(place => {
                 const option = document.createElement("option");
                 option.value = place.display_name;
                 option.textContent = place.display_name;
-                option.dataset.address = place.display_name; // Store address
+                option.dataset.address = place.display_name;
+
                 option.addEventListener("click", () => {
-                    document.getElementById("destination-address").value = option.dataset.address;
-                    document.getElementById("destination").value = option.textContent;
-                    resultsDropdown.innerHTML = ""; // Hide results after selection
+                    const addressId = inputElement.id.replace("destination-", "destination-address-");
+                    document.getElementById(addressId).value = option.dataset.address;
+                    inputElement.value = option.textContent;
+                    resultsDropdown.innerHTML = "";
                 });
+
                 resultsDropdown.appendChild(option);
             });
         })
@@ -152,18 +183,22 @@ function searchLocation() {
 function submitTask() {
     const apiKey = "60670ecfb8870f29baa81e525f7d2187";
     const teamId = document.getElementById('team').value;
-    const recipient = document.getElementById('recipient').value;
-    const destination = document.getElementById('destination-address').value;
     const caseNumber = document.getElementById('case-number').value;
     const taskType = document.querySelector('input[name="taskType"]:checked').value;
 
-    const taskData = {
-        destination: { address: destination },
-        recipients: [{ name: recipient }],
-        pickupTask: taskType === "pickup",
-        metadata: [{ name: "Case Number", value: caseNumber, type: "string" }],
-        team: teamId
-    };
+    const stops = [];
+    for (let i = 1; i <= stopCount; i++) {
+        const recipient = document.getElementById(`recipient-${i}`).value;
+        const destination = document.getElementById(`destination-address-${i}`).value;
+        const notes = document.getElementById(`notes-${i}`).value;
+
+        stops.push({
+            destination: { address: destination },
+            recipients: [{ name: recipient }],
+            notes: notes,
+            pickupTask: taskType === "pickup"
+        });
+    }
 
     fetch("https://onfleet.com/api/v2/tasks", {
         method: "POST",
@@ -171,16 +206,11 @@ function submitTask() {
             "Authorization": "Basic " + btoa(apiKey + ":"),
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(taskData)
+        body: JSON.stringify({ stops, metadata: [{ name: "Case Number", value: caseNumber, type: "string" }], team: teamId })
     })
     .then(response => response.json())
-    .then(data => {
-        alert("Task Created Successfully!\n" + JSON.stringify(data, null, 2));
-    })
-    .catch(error => {
-        console.error("Error creating task:", error);
-        alert("Failed to create task. Please check the API key and input data.");
-    });
+    .then(data => alert("Task Created Successfully!\n" + JSON.stringify(data, null, 2)))
+    .catch(error => alert("Failed to create task."));
 }
 </script>
 
