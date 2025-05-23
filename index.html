@@ -77,7 +77,10 @@
     <!-- Stops Section -->
     <div id="stops-container">
         <div class="stop">
+            <h3>Stop 1</h3>
+
             <label for="recipient-1">Select Recipient</label>
+            <input type="text" id="recipient-search-1" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-1', 'recipient-1')">
             <select id="recipient-1">
                 <option value="jason-doering">JASON DOERING</option>
                 <option value="william-alfiere">WILLIAM ALFIERE</option>
@@ -111,7 +114,10 @@ function addStop() {
     newStop.classList.add("stop");
 
     newStop.innerHTML = `
+        <h3>Stop ${stopCount}</h3>
+
         <label for="recipient-${stopCount}">Select Recipient</label>
+        <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
         <select id="recipient-${stopCount}">
             <option value="jason-doering">JASON DOERING</option>
             <option value="william-alfiere">WILLIAM ALFIERE</option>
