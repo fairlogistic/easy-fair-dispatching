@@ -36,10 +36,10 @@
             background-color: #ffffff;
         }
         textarea {
-            height: 150px; /* Larger Destination Notes box */
+            height: 150px;
         }
         #team {
-            height: 50px; /* Enlarged Team selection dropdown */
+            height: 50px;
             font-size: 18px;
         }
         .search-wrapper {
@@ -95,7 +95,7 @@
     <label for="recipient-search">Select Recipient</label>
     <div class="search-wrapper">
         <input type="text" id="recipient-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search', 'recipient')">
-        <select id="recipient" class="search-dropdown">
+        <select id="recipient" class="search-dropdown" onchange="updateSearchField('recipient-search', 'recipient')">
             <option value="jason-doering">JASON DOERING</option>
             <option value="william-alfiere">WILLIAM ALFIERE</option>
             <option value="chris-fazio">CHRIS FAZIO</option>
@@ -106,7 +106,7 @@
     <label for="destination-search">Select Destination</label>
     <div class="search-wrapper">
         <input type="text" id="destination-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('destination-search', 'destination')">
-        <select id="destination" class="search-dropdown">
+        <select id="destination" class="search-dropdown" onchange="updateSearchField('destination-search', 'destination')">
             <option value="baystate-med-ctr">BAYSTATE MED CTR</option>
             <option value="bridgeport-hosp">BRIDGEPORT HOSP</option>
             <option value="hartford-hosp">HARTFORD HOSP</option>
@@ -135,7 +135,6 @@
         </label>
     </div>
 
-
     <button class="submit-btn" onclick="submitTask()">Create Task</button>
 </div>
 
@@ -143,13 +142,30 @@
 function filterDropdown(searchId, dropdownId) {
     const searchInput = document.getElementById(searchId).value.toLowerCase();
     const dropdown = document.getElementById(dropdownId);
-    dropdown.style.display = searchInput ? "block" : "none"; // Show dropdown when typing
+
+    dropdown.style.display = searchInput ? "block" : "none";
+
+    let foundMatch = false;
     for (const option of dropdown.options) {
-        option.style.display = option.text.toLowerCase().includes(searchInput) ? "block" : "none";
+        if (option.text.toLowerCase().includes(searchInput)) {
+            option.style.display = "block";
+            foundMatch = true;
+        } else {
+            option.style.display = "none";
+        }
+    }
+
+    if (!foundMatch) {
+        dropdown.style.display = "none";
     }
 }
 
-// Auto-hide dropdown when clicking elsewhere
+function updateSearchField(searchId, dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    document.getElementById(searchId).value = dropdown.options[dropdown.selectedIndex].text;
+    dropdown.style.display = "none";
+}
+
 document.addEventListener("click", function(event) {
     if (!event.target.matches(".search-box")) {
         document.querySelectorAll(".search-dropdown").forEach(dropdown => {
@@ -159,28 +175,20 @@ document.addEventListener("click", function(event) {
 });
 
 function submitTask() {
-    const apiKey = "60670ecfb8870f29baa81e525f7d2187"; // Replace with actual API key
-    const teamId = document.getElementById('team').value; // Get selected team (Test Team)
-
+    const apiKey = "60670ecfb8870f29baa81e525f7d2187";
+    const teamId = document.getElementById('team').value;
     const recipient = document.getElementById('recipient').value;
     const destination = document.getElementById('destination').value;
     const destinationNotes = document.getElementById('destination-notes').value;
     const caseNumber = document.getElementById('case-number').value;
     const taskType = document.querySelector('input[name="taskType"]:checked').value;
-    const notes = document.getElementById('notes').value;
 
     const taskData = {
-        destination: {
-            address: destination,
-            notes: destinationNotes
-        },
-        recipients: [{
-            name: recipient
-        }],
-        notes: notes,
+        destination: { address: destination, notes: destinationNotes },
+        recipients: [{ name: recipient }],
         pickupTask: taskType === "pickup",
         metadata: [{ name: "Case Number", value: caseNumber, type: "string" }],
-        team: teamId // Assign the task to the selected team
+        team: teamId
     };
 
     fetch("https://onfleet.com/api/v2/tasks", {
