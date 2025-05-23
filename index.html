@@ -106,8 +106,6 @@
 <script>
 let stopCount = 1;
 
-let stopCount = 1;
-
 function addStop() {
     stopCount++;
     const stopsContainer = document.getElementById("stops-container");
@@ -136,7 +134,6 @@ function addStop() {
         <textarea id="notes-${stopCount}" rows="4" placeholder="e.g. Use main entrance"></textarea>
     `;
 
-    // Append new stop section to the form
     stopsContainer.appendChild(newStop);
 }
 
@@ -169,39 +166,6 @@ function searchLocation(inputElement) {
             });
         })
         .catch(error => console.error("Error fetching location:", error));
-}
-
-function submitTask() {
-    const apiKey = "60670ecfb8870f29baa81e525f7d2187";
-    const teamId = document.getElementById('team').value;
-    const caseNumber = document.getElementById('case-number').value;
-    const taskType = document.querySelector('input[name="taskType"]:checked").value;
-
-    const stops = [];
-    for (let i = 1; i <= stopCount; i++) {
-        const recipient = document.getElementById(`recipient-${i}`).value;
-        const destination = document.getElementById(`destination-address-${i}`).value;
-        const notes = document.getElementById(`notes-${i}`).value;
-
-        stops.push({
-            destination: { address: destination },
-            recipients: [{ name: recipient }],
-            notes: notes,
-            pickupTask: taskType === "pickup"
-        });
-    }
-
-    fetch("https://onfleet.com/api/v2/tasks", {
-        method: "POST",
-        headers: {
-            "Authorization": "Basic " + btoa(apiKey + ":"),
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ stops, metadata: [{ name: "Case Number", value: caseNumber, type: "string" }], team: teamId })
-    })
-    .then(response => response.json())
-    .then(data => alert("Task Created Successfully!\n" + JSON.stringify(data, null, 2)))
-    .catch(error => alert("Failed to create task."));
 }
 </script>
 
