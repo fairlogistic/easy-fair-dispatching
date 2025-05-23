@@ -116,6 +116,8 @@ function addStop() {
     newStop.innerHTML = `
         <h3>Stop ${stopCount}</h3>
 
+        
+
         <label for="recipient-${stopCount}">Select Recipient</label>
         <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
         <select id="recipient-${stopCount}">
