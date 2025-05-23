@@ -81,12 +81,7 @@
 
             <label for="recipient-1">Select Recipient</label>
             <input type="text" id="recipient-search-1" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-1', 'recipient-1')">
-            <select id="recipient-1">
-                <option value="jason-doering">JASON DOERING</option>
-                <option value="william-alfiere">WILLIAM ALFIERE</option>
-                <option value="chris-fazio">CHRIS FAZIO</option>
-                <option value="thomas-cook">THOMAS COOK</option>
-            </select>
+            <select id="recipient-1"></select>
 
             <label for="destination-1">Search Destination</label>
             <input type="text" id="destination-1" placeholder="Type hospital name..." oninput="searchLocation(this)">
@@ -104,6 +99,7 @@
 </div>
 
 <script>
+const recipients = ["JASON DOERING", "WILLIAM ALFIERE", "CHRIS FAZIO", "THOMAS COOK"];
 let stopCount = 1;
 
 function addStop() {
@@ -115,28 +111,9 @@ function addStop() {
 
     newStop.innerHTML = `
         <h3>Stop ${stopCount}</h3>
- <label for="case-number">Case Number</label>
-    <input type="text" id="case-number" placeholder="Enter case number">
-
-    <label>Pickup or Dropoff</label>
-    <div class="toggle-group">
-        <label>
-            <input type="radio" name="taskType" value="pickup" checked> Pickup
-        </label>
-        <label>
-            <input type="radio" name="taskType" value="dropoff"> Dropoff
-        </label>
-    </div>
-        
-
         <label for="recipient-${stopCount}">Select Recipient</label>
         <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
-        <select id="recipient-${stopCount}">
-            <option value="jason-doering">JASON DOERING</option>
-            <option value="william-alfiere">WILLIAM ALFIERE</option>
-            <option value="chris-fazio">CHRIS FAZIO</option>
-            <option value="thomas-cook">THOMAS COOK</option>
-        </select>
+        <select id="recipient-${stopCount}"></select>
 
         <label for="destination-${stopCount}">Search Destination</label>
         <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." oninput="searchLocation(this)">
@@ -148,6 +125,24 @@ function addStop() {
     `;
 
     stopsContainer.appendChild(newStop);
+    filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`); // Initialize filtering
+}
+
+function filterDropdown(inputId, dropdownId) {
+    const inputElement = document.getElementById(inputId);
+    const dropdownElement = document.getElementById(dropdownId);
+    const filterText = inputElement.value.toLowerCase();
+
+    dropdownElement.innerHTML = "";
+
+    recipients.forEach(name => {
+        if (name.toLowerCase().includes(filterText)) {
+            const option = document.createElement("option");
+            option.value = name.toLowerCase().replace(/\s+/g, '-');
+            option.textContent = name;
+            dropdownElement.appendChild(option);
+        }
+    });
 }
 
 function searchLocation(inputElement) {
