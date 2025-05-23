@@ -165,7 +165,7 @@ function searchLocation(inputElement) {
 
     if (query.length < 3) return;
 
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`)
+   fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query} hospital clinic orthopedic&countrycodes=us&limit=5`)
         .then(response => response.json())
         .then(data => {
             const resultsDropdown = document.getElementById(resultsId);
