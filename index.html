@@ -139,6 +139,25 @@ function addStop() {
     `;
 
     stopsContainer.appendChild(newStop);
+
+    populateRecipientDropdown(`recipient-${stopCount}`); // Populate recipient list
+}
+
+function populateRecipientDropdown(dropdownId) {
+    const dropdownElement = document.getElementById(dropdownId);
+    const recipients = ["JASON DOERING", "WILLIAM ALFIERE", "CHRIS FAZIO", "THOMAS COOK"];
+
+    dropdownElement.innerHTML = ""; // Clear existing options
+
+    recipients.forEach(name => {
+        const option = document.createElement("option");
+        option.value = name.toLowerCase().replace(/\s+/g, '-'); // Convert to consistent format
+        option.textContent = name;
+        dropdownElement.appendChild(option);
+    });
+}
+
+    stopsContainer.appendChild(newStop);
     filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`); // Initialize filtering
 }
 
