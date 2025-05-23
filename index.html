@@ -159,33 +159,45 @@ function filterDropdown(inputId, dropdownId) {
     });
 }
 
-function searchLocation(inputElement) {
+    
+    
+    
+    function searchLocation(inputElement) {
     const query = inputElement.value;
     const resultsId = inputElement.id.replace("destination-", "destination-results-");
 
-    if (query.length < 3) return;
+    if (query.length < 3) return; // Only search when at least 3 characters are typed
 
-  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`)
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=us&limit=5&extratags=1`)
         .then(response => response.json())
         .then(data => {
             const resultsDropdown = document.getElementById(resultsId);
             resultsDropdown.innerHTML = "";
 
             data.forEach(place => {
-                const option = document.createElement("option");
-                option.value = place.display_name;
-                option.textContent = place.display_name;
-                option.dataset.address = place.display_name;
+                if (place.extratags && ["hospital", "clinic", "orthopedic"].some(tag => place.extratags.amenity?.includes(tag))) {
+                    const option = document.createElement("option");
+                    option.value = place.display_name;
+                    option.textContent = place.display_name;
+                    option.dataset.address = place.display_name;
 
-                option.addEventListener("click", () => {
-                    const addressId = inputElement.id.replace("destination-", "destination-address-");
-                    document.getElementById(addressId).value = option.dataset.address;
-                    inputElement.value = option.textContent;
-                    resultsDropdown.innerHTML = "";
-                });
+                    option.addEventListener("click", () => {
+                        const addressId = inputElement.id.replace("destination-", "destination-address-");
+                        document.getElementById(addressId).value = option.dataset.address;
+                        inputElement.value = option.textContent;
+                        resultsDropdown.innerHTML = "";
+                    });
 
-                resultsDropdown.appendChild(option);
+                    resultsDropdown.appendChild(option);
+                }
             });
+
+            // If no valid hospitals/clinics are found, show a message
+            if (!resultsDropdown.hasChildNodes()) {
+                const noResults = document.createElement("option");
+                noResults.textContent = "No matching medical facilities found.";
+                resultsDropdown.appendChild(noResults);
+            }
         })
         .catch(error => console.error("Error fetching location:", error));
 }
