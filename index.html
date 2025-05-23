@@ -111,20 +111,6 @@ function addStop() {
 
     newStop.innerHTML = `
         <h3>Stop ${stopCount}</h3>
-
-        <label for="case-number-${stopCount}">Case Number</label>
-        <input type="text" id="case-number-${stopCount}" placeholder="Enter case number">
-
-        <label>Pickup or Dropoff</label>
-        <div class="toggle-group">
-            <label>
-                <input type="radio" name="taskType-${stopCount}" value="pickup" checked> Pickup
-            </label>
-            <label>
-                <input type="radio" name="taskType-${stopCount}" value="dropoff"> Dropoff
-            </label>
-        </div>
-
         <label for="recipient-${stopCount}">Select Recipient</label>
         <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
         <select id="recipient-${stopCount}"></select>
@@ -139,26 +125,24 @@ function addStop() {
     `;
 
     stopsContainer.appendChild(newStop);
-
-    populateRecipientDropdown(`recipient-${stopCount}`); // Populate recipient list
+    filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`); // Initialize filtering
 }
 
-function populateRecipientDropdown(dropdownId) {
+function filterDropdown(inputId, dropdownId) {
+    const inputElement = document.getElementById(inputId);
     const dropdownElement = document.getElementById(dropdownId);
-    const recipients = ["JASON DOERING", "WILLIAM ALFIERE", "CHRIS FAZIO", "THOMAS COOK"];
+    const filterText = inputElement.value.toLowerCase();
 
-    dropdownElement.innerHTML = ""; // Clear existing options
+    dropdownElement.innerHTML = "";
 
     recipients.forEach(name => {
-        const option = document.createElement("option");
-        option.value = name.toLowerCase().replace(/\s+/g, '-'); // Convert to consistent format
-        option.textContent = name;
-        dropdownElement.appendChild(option);
+        if (name.toLowerCase().includes(filterText)) {
+            const option = document.createElement("option");
+            option.value = name.toLowerCase().replace(/\s+/g, '-');
+            option.textContent = name;
+            dropdownElement.appendChild(option);
+        }
     });
-}
-
-    stopsContainer.appendChild(newStop);
-    filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`); // Initialize filtering
 }
 
 function searchLocation(inputElement) {
