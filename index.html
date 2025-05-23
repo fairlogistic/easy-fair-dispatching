@@ -35,41 +35,24 @@
             border-radius: 4px;
             background-color: #ffffff;
         }
-        textarea {
-            height: 150px;
-        }
-        #team {
-            height: 50px;
-            font-size: 18px;
-        }
-        .search-wrapper {
+        .dropdown-wrapper {
             position: relative;
-            width: 100%;
         }
-        .search-box {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #ffffff;
-        }
-        .search-dropdown {
+        .dropdown {
             width: 100%;
             max-height: 200px;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 4px;
-            display: none;
-            position: absolute;
             background-color: #ffffff;
-            z-index: 1000;
         }
-        .search-dropdown option {
+        .search-input {
+            width: 100%;
             padding: 8px;
-            cursor: pointer;
-        }
-        .search-dropdown option:hover {
-            background-color: #f0f4f8;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #ffffff;
         }
         .submit-btn {
             margin-top: 30px;
@@ -93,9 +76,9 @@
     <h1>Fair Dispatching</h1>
 
     <label for="recipient-search">Select Recipient</label>
-    <div class="search-wrapper">
-        <input type="text" id="recipient-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search', 'recipient')">
-        <select id="recipient" class="search-dropdown" onchange="updateSearchField('recipient-search', 'recipient')">
+    <div class="dropdown-wrapper">
+        <input type="text" id="recipient-search" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search', 'recipient')">
+        <select id="recipient" class="dropdown">
             <option value="jason-doering">JASON DOERING</option>
             <option value="william-alfiere">WILLIAM ALFIERE</option>
             <option value="chris-fazio">CHRIS FAZIO</option>
@@ -104,9 +87,9 @@
     </div>
 
     <label for="destination-search">Select Destination</label>
-    <div class="search-wrapper">
-        <input type="text" id="destination-search" class="search-box" placeholder="Type to search..." onkeyup="filterDropdown('destination-search', 'destination')">
-        <select id="destination" class="search-dropdown" onchange="updateSearchField('destination-search', 'destination')">
+    <div class="dropdown-wrapper">
+        <input type="text" id="destination-search" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('destination-search', 'destination')">
+        <select id="destination" class="dropdown">
             <option value="baystate-med-ctr">BAYSTATE MED CTR</option>
             <option value="bridgeport-hosp">BRIDGEPORT HOSP</option>
             <option value="hartford-hosp">HARTFORD HOSP</option>
@@ -143,70 +126,9 @@ function filterDropdown(searchId, dropdownId) {
     const searchInput = document.getElementById(searchId).value.toLowerCase();
     const dropdown = document.getElementById(dropdownId);
 
-    dropdown.style.display = searchInput ? "block" : "none";
-
-    let foundMatch = false;
     for (const option of dropdown.options) {
-        if (option.text.toLowerCase().includes(searchInput)) {
-            option.style.display = "block";
-            foundMatch = true;
-        } else {
-            option.style.display = "none";
-        }
+        option.style.display = option.text.toLowerCase().includes(searchInput) ? "block" : "none";
     }
-
-    if (!foundMatch) {
-        dropdown.style.display = "none";
-    }
-}
-
-function updateSearchField(searchId, dropdownId) {
-    const dropdown = document.getElementById(dropdownId);
-    document.getElementById(searchId).value = dropdown.options[dropdown.selectedIndex].text;
-    dropdown.style.display = "none";
-}
-
-document.addEventListener("click", function(event) {
-    if (!event.target.matches(".search-box")) {
-        document.querySelectorAll(".search-dropdown").forEach(dropdown => {
-            dropdown.style.display = "none";
-        });
-    }
-});
-
-function submitTask() {
-    const apiKey = "60670ecfb8870f29baa81e525f7d2187";
-    const teamId = document.getElementById('team').value;
-    const recipient = document.getElementById('recipient').value;
-    const destination = document.getElementById('destination').value;
-    const destinationNotes = document.getElementById('destination-notes').value;
-    const caseNumber = document.getElementById('case-number').value;
-    const taskType = document.querySelector('input[name="taskType"]:checked').value;
-
-    const taskData = {
-        destination: { address: destination, notes: destinationNotes },
-        recipients: [{ name: recipient }],
-        pickupTask: taskType === "pickup",
-        metadata: [{ name: "Case Number", value: caseNumber, type: "string" }],
-        team: teamId
-    };
-
-    fetch("https://onfleet.com/api/v2/tasks", {
-        method: "POST",
-        headers: {
-            "Authorization": "Basic " + btoa(apiKey + ":"),
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(taskData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert("Task Created Successfully!\n" + JSON.stringify(data, null, 2));
-    })
-    .catch(error => {
-        console.error("Error creating task:", error);
-        alert("Failed to create task. Please check the API key and input data.");
-    });
 }
 </script>
 
