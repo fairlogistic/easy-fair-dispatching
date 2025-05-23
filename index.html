@@ -79,6 +79,18 @@
         <div class="stop">
             <h3>Stop 1</h3>
 
+            <label for="case-number">Case Number</label>
+    <input type="text" id="case-number" placeholder="Enter case number">
+
+    <label>Pickup or Dropoff</label>
+    <div class="toggle-group">
+        <label>
+            <input type="radio" name="taskType" value="pickup" checked> Pickup
+        </label>
+        <label>
+            <input type="radio" name="taskType" value="dropoff"> Dropoff
+        </label>
+    
             <label for="recipient-1">Select Recipient</label>
             <input type="text" id="recipient-search-1" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-1', 'recipient-1')">
             <select id="recipient-1"></select>
