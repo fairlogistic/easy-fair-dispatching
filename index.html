@@ -91,19 +91,7 @@
 
             <label for="notes-1">Delivery Notes (Optional)</label>
             <textarea id="notes-1" rows="4" placeholder="e.g. Use main entrance"></textarea>
-
-            <label for="case-number">Case Number</label>
-    <input type="text" id="case-number" placeholder="Enter case number">
-
-    <label>Pickup or Dropoff</label>
-    <div class="toggle-group">
-        <label>
-            <input type="radio" name="taskType" value="pickup" checked> Pickup
-        </label>
-        <label>
-            <input type="radio" name="taskType" value="dropoff"> Dropoff
-        </label>
-    </div>
+            
         </div>
     </div>
 
@@ -125,6 +113,18 @@ function addStop() {
 
     newStop.innerHTML = `
         <h3>Stop ${stopCount}</h3>
+        <label for="case-number">Case Number</label>
+    <input type="text" id="case-number" placeholder="Enter case number">
+
+    <label>Pickup or Dropoff</label>
+    <div class="toggle-group">
+        <label>
+            <input type="radio" name="taskType" value="pickup" checked> Pickup
+        </label>
+        <label>
+            <input type="radio" name="taskType" value="dropoff"> Dropoff
+        </label>
+    
         <label for="recipient-${stopCount}">Select Recipient</label>
         <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
         <select id="recipient-${stopCount}"></select>
