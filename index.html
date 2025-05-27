@@ -64,6 +64,15 @@
     <label for="case-number">Case Number</label>
     <input type="text" id="case-number" placeholder="Enter case number">
 
+    <label for="reason-code">Reason Code</label>
+    <input type="text" id="reason-code" placeholder="Enter reason code">
+
+    <label for="trays">Trays</label>
+    <input type="text" id="trays" placeholder="Enter number of trays">
+
+    <label for="tubs">Tubs</label>
+    <input type="text" id="tubs" placeholder="Enter number of tubs">
+
     <label>Pickup or Dropoff</label>
     <div class="toggle-group">
         <label>
@@ -84,7 +93,7 @@
             <select id="recipient-1"></select>
 
             <label for="destination-1">Search Destination</label>
-            <input type="text" id="destination-1" placeholder="Type hospital name..." onfocus="fetchDestinations()">
+            <input type="text" id="destination-1" placeholder="Type hospital name..." oninput="searchLocation(this)">
             <select id="destination-results-1" size="5"></select>
             <input type="text" id="destination-address-1" placeholder="Address will auto-fill..." readonly>
 
@@ -101,6 +110,24 @@
 <script>
 const recipients = ["JASON DOERING", "WILLIAM ALFIERE", "CHRIS FAZIO", "THOMAS COOK"];
 let stopCount = 1;
+let destinations = []; // Store destinations for filtering
+
+function fetchDestinations() {
+    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=ProperName,Address")
+        .then(response => response.json())
+        .then(data => {
+            destinations = data.value.map(place => ({
+                name: place.ProperName,
+                address: place.Address
+            }));
+
+            console.log("Loaded destinations:", destinations); // Debugging step
+        })
+        .catch(error => console.error("Error fetching SharePoint destinations:", error));
+}
+
+// Load SharePoint data when the page loads
+document.addEventListener("DOMContentLoaded", fetchDestinations);
 
 function addStop() {
     stopCount++;
@@ -111,8 +138,18 @@ function addStop() {
 
     newStop.innerHTML = `
         <h3>Stop ${stopCount}</h3>
+
         <label for="case-number-${stopCount}">Case Number</label>
         <input type="text" id="case-number-${stopCount}" placeholder="Enter case number">
+
+        <label for="reason-code-${stopCount}">Reason Code</label>
+        <input type="text" id="reason-code-${stopCount}" placeholder="Enter reason code">
+
+        <label for="trays-${stopCount}">Trays</label>
+        <input type="text" id="trays-${stopCount}" placeholder="Enter number of trays">
+
+        <label for="tubs-${stopCount}">Tubs</label>
+        <input type="text" id="tubs-${stopCount}" placeholder="Enter number of tubs">
 
         <label>Pickup or Dropoff</label>
         <div class="toggle-group">
@@ -129,7 +166,7 @@ function addStop() {
         <select id="recipient-${stopCount}"></select>
 
         <label for="destination-${stopCount}">Search Destination</label>
-        <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." onfocus="fetchDestinations()">
+        <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." oninput="searchLocation(this)">
         <select id="destination-results-${stopCount}" size="5"></select>
         <input type="text" id="destination-address-${stopCount}" placeholder="Address will auto-fill..." readonly>
 
@@ -141,31 +178,35 @@ function addStop() {
     filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`);
 }
 
-// Fetch destinations from SharePoint instead of Nominatim
-function fetchDestinations() {
-    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=ProperName,Address")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Destinations from SharePoint:", data); // Debugging step
+function searchLocation(inputElement) {
+    const query = inputElement.value.toLowerCase();
+    const resultsId = inputElement.id.replace("destination-", "destination-results-");
+    const resultsDropdown = document.getElementById(resultsId);
 
-            const resultsDropdown = document.getElementById("destination-results-1");
-            resultsDropdown.innerHTML = ""; // Clear previous results
+    resultsDropdown.innerHTML = ""; // Clear previous results
 
-            data.value.forEach(place => {
-                const option = document.createElement("option");
-                option.value = place.Address;
-                option.textContent = place.ProperName;
+    if (query.length < 2) return;
 
-                option.addEventListener("click", () => {
-                    document.getElementById("destination-1").value = place.ProperName;
-                    document.getElementById("destination-address-1").value = place.Address;
-                    resultsDropdown.innerHTML = "";
-                });
+    const filteredDestinations = destinations.filter(place => place.name.toLowerCase().includes(query));
 
-                resultsDropdown.appendChild(option);
-            });
-        })
-        .catch(error => console.error("Error fetching SharePoint destinations:", error));
+    if (filteredDestinations.length === 0) {
+        resultsDropdown.innerHTML = "<option>No matching locations found.</option>";
+        return;
+    }
+
+    filteredDestinations.forEach(place => {
+        const option = document.createElement("option");
+        option.value = place.address;
+        option.textContent = place.name;
+
+        option.addEventListener("click", () => {
+            document.getElementById(inputElement.id.replace("destination-", "destination-address-")).value = place.address;
+            inputElement.value = place.name;
+            resultsDropdown.innerHTML = "";
+        });
+
+        resultsDropdown.appendChild(option);
+    });
 }
 </script>
 
