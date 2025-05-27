@@ -216,7 +216,7 @@ function searchLocation(inputElement) {
     const address = document.getElementById("destination-address-1").value;
     const notes = document.getElementById("notes-1").value;
 
-   fetch("https://fair-dispatch-backend.derricklewis.repl.co/create-task", {
+   fetch("https://Fair-dispatching-backend.derricklewis.repl.co/create-task", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
