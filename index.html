@@ -66,7 +66,7 @@ let stopCount = 1;
 let destinations = []; // Store destinations for filtering
 
 function fetchDestinations() {
-    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=Title,Field6")
+    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=Title,Field_6")
         .then(response => response.json())
         .then(data => {
             console.log("SharePoint Response Data:", data); // Debugging step
@@ -77,8 +77,8 @@ function fetchDestinations() {
             }
 
             destinations = data.value.map(place => ({
-                name: place.Title,  // Using Title instead of ProperName
-                address: place.Field6 // Using Field6 instead of Address
+                name: place.Title,  // Now correctly using Title
+                address: place.Field_6 // Updated to Field_6
             }));
 
             console.log("Filtered destinations array:", destinations); // Check processed data
