@@ -208,6 +208,40 @@ function searchLocation(inputElement) {
         resultsDropdown.appendChild(option);
     });
 }
+      function submitTask() {
+    const caseNumber = document.getElementById("case-number").value;
+    const team = document.getElementById("team").value;
+    const taskType = document.querySelector('input[name="taskType"]:checked').value;
+    const recipient = document.getElementById("recipient-1").value;
+    const address = document.getElementById("destination-address-1").value;
+    const notes = document.getElementById("notes-1").value;
+
+   fetch("https://fair-dispatch-backend.derricklewis.repl.co/create-task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            team,
+            caseNumber,
+            taskType,
+            recipient,
+            address,
+            notes
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Task created successfully!");
+        } else {
+            alert("Failed to create task.");
+        }
+    })
+    .catch(err => {
+        console.error("Error:", err);
+        alert("Something went wrong.");
+    });
+}
+
 </script>
 
 </body>
