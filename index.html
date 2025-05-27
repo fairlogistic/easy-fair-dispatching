@@ -63,14 +63,16 @@
 let destinations = []; // Store destinations for filtering
 
 function fetchCSV() {
-    fetch('CTdestinations.csv')
+    fetch('https://raw.githubusercontent.com/fairlogistic/easy-fair-dispatching/main/CTdestinations.csv')
         .then(response => response.text())
         .then(data => {
-            const rows = data.split("\n").map(row => row.split(","));
-            destinations = rows.map(row => ({
-                name: row[0].trim(),  // Assuming first column is "Proper Name"
-                address: row[1].trim() // Assuming second column is "Address"
-            }));
+            const rows = data.trim().split("\n").map(row => row.split(","));
+            destinations = rows
+                .filter(row => row.length >= 2) // Ensure valid rows
+                .map(row => ({
+                    name: row[0]?.trim() || "Unknown",  
+                    address: row[1]?.trim() || "No Address"
+                }));
             console.log("Loaded destinations:", destinations);
         })
         .catch(error => console.error("Error loading CSV:", error));
