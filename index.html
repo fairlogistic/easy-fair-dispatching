@@ -66,22 +66,22 @@ let stopCount = 1;
 let destinations = []; // Store destinations for filtering
 
 function fetchDestinations() {
-    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=ProperName,Address")
+    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=Title,Field6")
         .then(response => response.json())
         .then(data => {
-            console.log("SharePoint Response Data:", data); // Check if data is retrieved
-            
+            console.log("SharePoint Response Data:", data); // Debugging step
+
             if (!data.value) {
                 console.error("Error: No 'value' field in response. Check API URL or permissions.");
                 return;
             }
 
             destinations = data.value.map(place => ({
-                name: place.ProperName,
-                address: place.Address
+                name: place.Title,  // Using Title instead of ProperName
+                address: place.Field6 // Using Field6 instead of Address
             }));
 
-            console.log("Filtered destinations array:", destinations); // See processed data
+            console.log("Filtered destinations array:", destinations); // Check processed data
         })
         .catch(error => console.error("Error fetching SharePoint destinations:", error));
 }
