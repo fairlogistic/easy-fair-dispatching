@@ -116,12 +116,19 @@ function fetchDestinations() {
     fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=ProperName,Address")
         .then(response => response.json())
         .then(data => {
+            console.log("SharePoint Response Data:", data); // Check if data is retrieved
+            
+            if (!data.value) {
+                console.error("Error: No 'value' field in response. Check API URL or permissions.");
+                return;
+            }
+
             destinations = data.value.map(place => ({
                 name: place.ProperName,
                 address: place.Address
             }));
 
-            console.log("Loaded destinations:", destinations); // Debugging step
+            console.log("Filtered destinations array:", destinations); // See processed data
         })
         .catch(error => console.error("Error fetching SharePoint destinations:", error));
 }
