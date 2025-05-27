@@ -90,6 +90,15 @@ function searchLocation(inputElement) {
 
     if (query.length < 2) return;
 
+  function searchLocation(inputElement) {
+    const query = inputElement.value.toLowerCase();
+    const resultsId = inputElement.id.replace("destination-", "destination-results-");
+    const resultsDropdown = document.getElementById(resultsId);
+    
+    resultsDropdown.innerHTML = "";
+
+    if (query.length < 2) return;
+
     const filteredDestinations = destinations.filter(place =>
         place.name.toLowerCase().includes(query) || place.address.toLowerCase().includes(query)
     );
@@ -102,7 +111,7 @@ function searchLocation(inputElement) {
     filteredDestinations.forEach(place => {
         const option = document.createElement("option");
         option.value = place.address;
-        option.textContent = `${place.name} - ${place.address}`;
+        option.textContent = `${place.name} - ${place.address}`; // Show both name & address
 
         option.addEventListener("click", () => {
             document.getElementById(inputElement.id.replace("destination-", "destination-address-")).value = place.address;
@@ -112,6 +121,7 @@ function searchLocation(inputElement) {
 
         resultsDropdown.appendChild(option);
     });
+
 }
 
 function addStop() {
