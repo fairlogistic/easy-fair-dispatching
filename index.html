@@ -79,19 +79,17 @@
         <div class="stop">
             <h3>Stop 1</h3>
 
-    
             <label for="recipient-1">Select Recipient</label>
             <input type="text" id="recipient-search-1" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-1', 'recipient-1')">
             <select id="recipient-1"></select>
 
             <label for="destination-1">Search Destination</label>
-            <input type="text" id="destination-1" placeholder="Type hospital name..." oninput="searchLocation(this)">
+            <input type="text" id="destination-1" placeholder="Type hospital name..." onfocus="fetchDestinations()">
             <select id="destination-results-1" size="5"></select>
             <input type="text" id="destination-address-1" placeholder="Address will auto-fill..." readonly>
 
             <label for="notes-1">Delivery Notes (Optional)</label>
             <textarea id="notes-1" rows="4" placeholder="e.g. Use main entrance"></textarea>
-            
         </div>
     </div>
 
@@ -113,24 +111,25 @@ function addStop() {
 
     newStop.innerHTML = `
         <h3>Stop ${stopCount}</h3>
-        <label for="case-number">Case Number</label>
-    <input type="text" id="case-number" placeholder="Enter case number">
+        <label for="case-number-${stopCount}">Case Number</label>
+        <input type="text" id="case-number-${stopCount}" placeholder="Enter case number">
 
-    <label>Pickup or Dropoff</label>
-    <div class="toggle-group">
-        <label>
-            <input type="radio" name="taskType" value="pickup" checked> Pickup
-        </label>
-        <label>
-            <input type="radio" name="taskType" value="dropoff"> Dropoff
-        </label>
-    
+        <label>Pickup or Dropoff</label>
+        <div class="toggle-group">
+            <label>
+                <input type="radio" name="taskType-${stopCount}" value="pickup" checked> Pickup
+            </label>
+            <label>
+                <input type="radio" name="taskType-${stopCount}" value="dropoff"> Dropoff
+            </label>
+        </div>
+
         <label for="recipient-${stopCount}">Select Recipient</label>
         <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
         <select id="recipient-${stopCount}"></select>
 
         <label for="destination-${stopCount}">Search Destination</label>
-        <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." oninput="searchLocation(this)">
+        <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." onfocus="fetchDestinations()">
         <select id="destination-results-${stopCount}" size="5"></select>
         <input type="text" id="destination-address-${stopCount}" placeholder="Address will auto-fill..." readonly>
 
@@ -139,64 +138,34 @@ function addStop() {
     `;
 
     stopsContainer.appendChild(newStop);
-    filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`); // Initialize filtering
+    filterDropdown(`recipient-search-${stopCount}`, `recipient-${stopCount}`);
 }
 
-function filterDropdown(inputId, dropdownId) {
-    const inputElement = document.getElementById(inputId);
-    const dropdownElement = document.getElementById(dropdownId);
-    const filterText = inputElement.value.toLowerCase();
-
-    dropdownElement.innerHTML = "";
-
-    recipients.forEach(name => {
-        if (name.toLowerCase().includes(filterText)) {
-            const option = document.createElement("option");
-            option.value = name.toLowerCase().replace(/\s+/g, '-');
-            option.textContent = name;
-            dropdownElement.appendChild(option);
-        }
-    });
-}
-
-    
-    
-    
-   function searchLocation(inputElement) {
-    const query = inputElement.value;
-    const resultsId = inputElement.id.replace("destination-", "destination-results-");
-
-    if (query.length < 3) return; // Only search when at least 3 characters are typed
-
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=us&limit=5`)
+// Fetch destinations from SharePoint instead of Nominatim
+function fetchDestinations() {
+    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=ProperName,Address")
         .then(response => response.json())
         .then(data => {
-            console.log("API Response:", data); // Debugging step to check results
-            const resultsDropdown = document.getElementById(resultsId);
-            resultsDropdown.innerHTML = "";
+            console.log("Destinations from SharePoint:", data); // Debugging step
 
-            data.forEach(place => {
+            const resultsDropdown = document.getElementById("destination-results-1");
+            resultsDropdown.innerHTML = ""; // Clear previous results
+
+            data.value.forEach(place => {
                 const option = document.createElement("option");
-                option.value = place.display_name;
-                option.textContent = place.display_name;
-                option.dataset.address = place.display_name;
+                option.value = place.Address;
+                option.textContent = place.ProperName;
 
                 option.addEventListener("click", () => {
-                    const addressId = inputElement.id.replace("destination-", "destination-address-");
-                    document.getElementById(addressId).value = option.dataset.address;
-                    inputElement.value = option.textContent;
+                    document.getElementById("destination-1").value = place.ProperName;
+                    document.getElementById("destination-address-1").value = place.Address;
                     resultsDropdown.innerHTML = "";
                 });
 
                 resultsDropdown.appendChild(option);
             });
-
-            if (!resultsDropdown.hasChildNodes()) {
-                resultsDropdown.innerHTML = "<option>No matching locations found.</option>";
-            }
         })
-        .catch(error => console.error("Error fetching location:", error));
-
+        .catch(error => console.error("Error fetching SharePoint destinations:", error));
 }
 </script>
 
