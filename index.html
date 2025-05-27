@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Fair Dispatching</title>
-<link rel="stylesheet" href="style.css">
+    <title>Fair Dispatching</title>
 </head>
 <body>
 
@@ -55,9 +54,8 @@
         </div>
     </div>
 
-    <button id="add-stop-btn" class="add-stop-btn" onclick="addStop()">➕ Add Stop</button>
-
-    <button class="submit-btn" onclick="submitTask()">Create Task</button>
+    <button id="add-stop-btn" onclick="addStop()">➕ Add Stop</button>
+    <button onclick="submitTask()">Create Task</button>
 </div>
 
 <script>
@@ -66,27 +64,20 @@ let stopCount = 1;
 let destinations = []; // Store destinations for filtering
 
 function fetchDestinations() {
-    fetch("https://fairorthologistics.sharepoint.com/sites/AnalyticsTeam/_api/web/lists/getbytitle('CT Destinations')/items?$select=Title,Field_6")
-        .then(response => response.json())
+    fetch("CTdestinations.csv")
+        .then(response => response.text())
         .then(data => {
-            console.log("SharePoint Response Data:", data); // Debugging step
-
-            if (!data.value) {
-                console.error("Error: No 'value' field in response. Check API URL or permissions.");
-                return;
-            }
-
-            destinations = data.value.map(place => ({
-                name: place.Title,  // Now correctly using Title
-                address: place.Field_6 // Updated to Field_6
-            }));
-
-            console.log("Filtered destinations array:", destinations); // Check processed data
+            let rows = data.split("\n").slice(1); // Skip header row
+            destinations = rows.map(row => {
+                let cols = row.split(",");
+                return { name: cols[0], address: cols[1] }; // Uses Proper Name and Address
+            });
+            console.log("Loaded destinations from CSV:", destinations);
         })
-        .catch(error => console.error("Error fetching SharePoint destinations:", error));
+        .catch(error => console.error("Error loading CSV:", error));
 }
 
-// Load SharePoint data when the page loads
+// Load destinations when the page loads
 document.addEventListener("DOMContentLoaded", fetchDestinations);
 
 function addStop() {
@@ -143,7 +134,7 @@ function searchLocation(inputElement) {
     const resultsId = inputElement.id.replace("destination-", "destination-results-");
     const resultsDropdown = document.getElementById(resultsId);
 
-    resultsDropdown.innerHTML = ""; // Clear previous results
+    resultsDropdown.innerHTML = ""; 
 
     if (query.length < 2) return;
 
@@ -158,7 +149,6 @@ function searchLocation(inputElement) {
         const option = document.createElement("option");
         option.value = place.address;
         option.textContent = place.name;
-
         option.addEventListener("click", () => {
             document.getElementById(inputElement.id.replace("destination-", "destination-address-")).value = place.address;
             inputElement.value = place.name;
@@ -168,51 +158,6 @@ function searchLocation(inputElement) {
         resultsDropdown.appendChild(option);
     });
 }
-     function submitTask() {
-    const caseNumber = document.getElementById("case-number").value;
-    const team = document.getElementById("team").value;
-    const taskType = document.querySelector('input[name="taskType"]:checked').value;
-    
-    const recipientDropdown = document.getElementById("recipient-1");
-    const recipient = recipientDropdown.options[recipientDropdown.selectedIndex]?.text || "";
-    
-    const address = document.getElementById("destination-address-1").value;
-    const notes = document.getElementById("notes-1").value;
-    const reasonCode = document.getElementById("reason-code").value;
-    const trays = document.getElementById("trays").value;
-    const tubs = document.getElementById("tubs").value;
-
-   fetch("https://12c5f3a2-db67-4796-9b30-7bd9ea35a802-00-ul0iyyuefxi7.janeway.replit.dev/create-task", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        team,
-        caseNumber,
-        taskType,
-        recipient,
-        address,
-        notes,
-        reasonCode,
-        trays,
-        tubs
-    })
-})
-
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert("Task created successfully!");
-        } else {
-            alert("Failed to create task.");
-        }
-    })
-    .catch(err => {
-        console.error("Error:", err);
-        alert("Something went wrong.");
-    });
-}
-
-
 </script>
 
 </body>
