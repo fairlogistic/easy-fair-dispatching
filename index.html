@@ -68,10 +68,10 @@ function fetchCSV() {
         .then(data => {
             const rows = data.trim().split("\n").map(row => row.split(","));
             destinations = rows
-                .filter(row => row.length >= 2) // Ensure valid rows
+                .filter(row => row.length >= 2) // Ensure the row has both name & address
                 .map(row => ({
                     name: row[0]?.trim() || "Unknown",  
-                    address: row[1]?.trim() || "No Address"
+                    address: row[1]?.trim() || "No Address" // Correct reference to 'Address' column
                 }));
             console.log("Loaded destinations:", destinations);
         })
@@ -101,12 +101,12 @@ function searchLocation(inputElement) {
 
     filteredDestinations.forEach(place => {
         const option = document.createElement("option");
-        option.value = place.address;
+        option.value = place.name;
         option.textContent = `${place.name} - ${place.address}`; // Display both name & address
 
         option.addEventListener("click", () => {
-            document.getElementById(inputElement.id.replace("destination-", "destination-address-")).value = place.address;
             inputElement.value = place.name;
+            document.getElementById(inputElement.id.replace("destination-", "destination-address-")).value = place.address;
             resultsDropdown.innerHTML = "";
         });
 
