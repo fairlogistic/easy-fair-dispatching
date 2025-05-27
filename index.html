@@ -168,15 +168,21 @@ function searchLocation(inputElement) {
         resultsDropdown.appendChild(option);
     });
 }
-      function submitTask() {
+     function submitTask() {
     const caseNumber = document.getElementById("case-number").value;
     const team = document.getElementById("team").value;
     const taskType = document.querySelector('input[name="taskType"]:checked').value;
-    const recipient = document.getElementById("recipient-1").value;
+    
+    const recipientDropdown = document.getElementById("recipient-1");
+    const recipient = recipientDropdown.options[recipientDropdown.selectedIndex]?.text || "";
+    
     const address = document.getElementById("destination-address-1").value;
     const notes = document.getElementById("notes-1").value;
+    const reasonCode = document.getElementById("reason-code").value;
+    const trays = document.getElementById("trays").value;
+    const tubs = document.getElementById("tubs").value;
 
-   fetch("https://Fair-dispatching-backend.derricklewis.repl.co/create-task", {
+    fetch("https://fair-dispatching-backend.derricklewis.repl.co/create-task", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -185,7 +191,10 @@ function searchLocation(inputElement) {
             taskType,
             recipient,
             address,
-            notes
+            notes,
+            reasonCode,
+            trays,
+            tubs
         })
     })
     .then(res => res.json())
@@ -201,6 +210,7 @@ function searchLocation(inputElement) {
         alert("Something went wrong.");
     });
 }
+
 
 </script>
 
