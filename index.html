@@ -71,7 +71,7 @@ function fetchCSV() {
                 .filter(row => row.length >= 2) // Ensure the row has both name & address
                 .map(row => ({
                     name: row[0]?.trim() || "Unknown",  
-                    address: row[1]?.trim() || "No Address" // Correct reference to 'Address' column
+                    address: row[6]?.trim() || "No Address" // Correct reference to 'Address' column
                 }));
             console.log("Loaded destinations:", destinations);
         })
