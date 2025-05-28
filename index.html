@@ -61,6 +61,7 @@
 
 <script>
 let destinations = []; // Store destinations for filtering
+let recipients = ["JASON DOERING", "WILLIAM ALFIERE", "CHRIS FAZIO", "THOMAS COOK"]; // Sample recipient list
 
 function fetchCSV() {
     fetch('https://raw.githubusercontent.com/fairlogistic/easy-fair-dispatching/main/CTdestinations.csv')
@@ -68,10 +69,10 @@ function fetchCSV() {
         .then(data => {
             const rows = data.trim().split("\n").map(row => row.split(","));
             destinations = rows
-                .filter(row => row.length >= 2) // Ensure the row has both name & address
+                .filter(row => row.length >= 2) // Ensure valid rows
                 .map(row => ({
                     name: row[0]?.trim() || "Unknown",  
-                    address: row[6]?.trim() || "No Address" // Correct reference to 'Address' column
+                    address: row[6]?.trim() || "No Address" // Correct index for Address
                 }));
             console.log("Loaded destinations:", destinations);
         })
@@ -111,6 +112,26 @@ function searchLocation(inputElement) {
         });
 
         resultsDropdown.appendChild(option);
+    });
+}
+
+function filterDropdown(searchId, dropdownId) {
+    const searchInput = document.getElementById(searchId).value.toLowerCase();
+    const dropdown = document.getElementById(dropdownId);
+    
+    dropdown.innerHTML = ""; // Clear previous options
+
+    const filteredRecipients = recipients.filter(name => name.toLowerCase().includes(searchInput));
+
+    if (filteredRecipients.length === 0) {
+        dropdown.innerHTML = "<option>No matching recipients found.</option>";
+        return;
+    }
+
+    filteredRecipients.forEach(name => {
+        const option = document.createElement("option");
+        option.textContent = name;
+        dropdown.appendChild(option);
     });
 }
 
