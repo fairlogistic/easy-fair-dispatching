@@ -235,7 +235,9 @@ function downloadCSVFromForm() {
 
 
 <script>
-let recipientLookup = {};  // Stores name → phone/address mapping
+let recipientLookup = {};       // name → {phone, address}
+let phoneLookup = {};           // phone → {name, address}
+
 
 function loadCSVForAutocomplete() {
   fetch('lookup.csv')
@@ -247,30 +249,35 @@ function loadCSVForAutocomplete() {
         const [recipient, phone, ...addressParts] = line.split(',');
         const address = addressParts.join(',').trim();
 
-        if (recipient && phone && address) {
-          const name = recipient.trim();
-          recipientLookup[name] = {
-            phone: phone.trim(),
-            address: address
-          };
+        const name = recipient.trim();
+        const phoneClean = phone.trim();
 
-          // Add to datalist
-          const opt = document.createElement("option");
-          opt.value = name;
-          document.getElementById("recipient-names").appendChild(opt);
-        }
+        recipientLookup[name] = { phone: phoneClean, address };
+        phoneLookup[phoneClean] = { name, address };
+
+        // Add to name datalist
+        const opt = document.createElement("option");
+        opt.value = name;
+        document.getElementById("recipient-names").appendChild(opt);
+
+        // Add to phone datalist
+        const optPhone = document.createElement("option");
+        optPhone.value = phoneClean;
+        document.getElementById("recipient-phones").appendChild(optPhone);
       });
     });
 }
+document.getElementById("recipient-phone-1").addEventListener("change", () => {
+  let inputPhone = document.getElementById("recipient-phone-1").value.trim();
+  if (!inputPhone.startsWith("+")) inputPhone = "+1" + inputPhone;
 
-document.getElementById("recipient-search-1").addEventListener("change", () => {
-  const name = document.getElementById("recipient-search-1").value;
-  const data = recipientLookup[name];
+  const data = phoneLookup[inputPhone];
   if (data) {
-    document.getElementById("recipient-phone-1").value = data.phone;
+    document.getElementById("recipient-search-1").value = data.name;
     document.getElementById("destination-address-1").value = data.address;
   }
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
   populateWorkerDropdown();
