@@ -93,6 +93,8 @@ document.addEventListener("DOMContentLoaded", populateWorkerDropdown);
   <br><br>
   <button class="submit-btn" onclick="submitTask()">🛰️ Create Task via API</button>
   <button onclick="downloadCSVFromForm()">💾 Download CSV for Review</button>
+  <br>
+  <button class="reset-btn" onclick="resetForm()">🔁 Reset Form</button>
 </div>
 
 
@@ -174,7 +176,7 @@ function submitTask() {
       if (data.success) {
         alert("✅ Onfleet task created!");
         console.log("Tracking URL:", data.data.trackingURL);
-        resetForm(); // 👈 Reset happens here, only after success
+        resetForm();
       } else {
         alert("❌ Task creation failed.");
         console.error(data);
@@ -186,9 +188,7 @@ function submitTask() {
     });
 }
 
-<script>
 function resetForm() {
-  // Reset all input fields
   document.getElementById("recipient-search-1").value = "";
   document.getElementById("recipient-phone-1").value = "";
   document.getElementById("destination-address-1").value = "";
@@ -196,7 +196,6 @@ function resetForm() {
   document.querySelector('input[name="taskType"][value="pickup"]').checked = true;
   document.getElementById("worker").selectedIndex = 0;
 
-  // Remove additional case entries (keep the first one)
   const container = document.getElementById("case-entries-container");
   const allEntries = container.querySelectorAll(".case-entry");
   allEntries.forEach((entry, index) => {
@@ -210,12 +209,8 @@ function resetForm() {
     }
   });
 
-  // Scroll to top
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-</script>
-
-  
 
 function downloadCSVFromForm() {
   const caseBlocks = Array.from(document.querySelectorAll(".case-entry"));
@@ -259,9 +254,7 @@ function downloadCSVFromForm() {
 }
 </script>
 
-<datalist id="recipient-names"></datalist>
-<datalist id="recipient-phones"></datalist>
-<datalist id="destination-addresses"></datalist>
+
 
 
 <script>
