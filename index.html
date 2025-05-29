@@ -1,202 +1,283 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fair Dispatching</title>
-    <link rel="stylesheet" href="style.css">
+  <title>Fair Dispatching</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>Fair Dispatching</h1>
+<div class="header">
+  <img src="image/logo2.png" alt="Fair Logistics Logo" class="logo">
+  <h1 class="app-title">RoutePilot</h1>
 
-    <label for="team">Select Team</label>
-    <select id="team">
-        <option value="~1uUPDmdOUKYphe447YeoQJC">Test Team</option>
-    </select>
 
-    <label for="case-number">Case Number</label>
-    <input type="text" id="case-number" placeholder="Enter case number">
 
-    <label for="reason-code">Reason Code</label>
-    <input type="text" id="reason-code" placeholder="Enter reason code">
+<!-- Recipient -->
+<label for="recipient-search-1">Recipient Name</label>
+<input type="text" id="recipient-search-1" list="recipient-names" placeholder="Type recipient name">
+<datalist id="recipient-names"></datalist>
 
-    <label for="trays">Trays</label>
-    <input type="text" id="trays" placeholder="Enter number of trays">
+<!-- Phone -->
+<label for="recipient-phone-1">Phone</label>
+<input type="text" id="recipient-phone-1" list="recipient-phones" placeholder="Enter phone">
+<datalist id="recipient-phones"></datalist>
 
-    <label for="tubs">Tubs</label>
-    <input type="text" id="tubs" placeholder="Enter number of tubs">
+<!-- Address -->
+<label for="destination-address-1">Destination Address</label>
+<input type="text" id="destination-address-1" list="destination-addresses" placeholder="Type full address manually">
+<datalist id="destination-addresses"></datalist>
 
-    <label>Pickup or Dropoff</label>
-    <div class="toggle-group">
-        <label>
-            <input type="radio" name="taskType" value="pickup" checked> Pickup
-        </label>
-        <label>
-            <input type="radio" name="taskType" value="dropoff"> Dropoff
-        </label>
+  <!-- notes -->
+  <label for="notes-1">Delivery Notes (Optional)</label>
+  <textarea id="notes-1" rows="4" placeholder="e.g. Use main entrance"></textarea>
+
+  <!-- pickupTask -->
+  <label>Pickup or Dropoff</label>
+  <div class="toggle-group">
+    <label><input type="radio" name="taskType" value="pickup" checked> Pickup</label>
+    <label><input type="radio" name="taskType" value="dropoff"> Dropoff</label>
+  </div>
+
+
+<!-- case blocks -->
+<div id="case-entries-container">
+  <h3>Case Entries (Up to 6)</h3>
+  <div class="case-entry" style="display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Case ID</label><br>
+      <input type="text" class="caseId" style="width: 100%;" />
     </div>
-
-    <!-- Stops Section -->
-    <div id="stops-container">
-        <div class="stop">
-            <h3>Stop 1</h3>
-
-            <label for="recipient-1">Select Recipient</label>
-            <input type="text" id="recipient-search-1" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-1', 'recipient-1')">
-            <select id="recipient-1"></select>
-
-            <label for="destination-1">Search Destination</label>
-            <input type="text" id="destination-1" placeholder="Type hospital name..." oninput="searchLocation(this)">
-            <select id="destination-results-1" size="5"></select>
-            <input type="text" id="destination-address-1" placeholder="Address will auto-fill..." readonly>
-
-            <label for="notes-1">Delivery Notes (Optional)</label>
-            <textarea id="notes-1" rows="4" placeholder="e.g. Use main entrance"></textarea>
-        </div>
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Reason Code</label><br>
+      <input type="text" class="reasonCode" style="width: 100%;" />
     </div>
-
-    <button id="add-stop-btn" class="add-stop-btn" onclick="addStop()">➕ Add Stop</button>
-    <button class="submit-btn" onclick="submitTask()">Create Task</button>
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Trays</label><br>
+      <input type="text" class="trays" style="width: 100%;" />
+    </div>
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Tubs</label><br>
+      <input type="text" class="tubs" style="width: 100%;" />
+    </div>
+  </div>
 </div>
 
+<button type="button" onclick="addCaseEntry()">➕ Add Case Entry</button>
+
+<!-- ✅ ADD THIS -->
+<label for="worker">Select Worker</label>
+<select id="worker"></select>
+
+<!-- worker script -->
 <script>
-let destinations = []; // Store destinations for filtering
-let recipients = ["JASON DOERING", "WILLIAM ALFIERE", "CHRIS FAZIO", "THOMAS COOK"]; // Sample recipient list
+const workerList = [
+  { id: "otT7sKhvupS1CJSCQcJeMTTO", name: "Sunday Test" },
+  { id: "~j1gNhRAev28UsmCefSh6hOX", name: "Dylan Feinberg (Test)" },
+  { id: "avlzZPruY3QxMihGIlgGcdRf", name: "Cory Hamlett" }
+];
 
-function fetchCSV() {
-    fetch('https://raw.githubusercontent.com/fairlogistic/easy-fair-dispatching/main/CTdestinations.csv')
-        .then(response => response.text())
-        .then(data => {
-            const rows = data.trim().split("\n").map(row => row.split(","));
-            destinations = rows
-                .filter(row => row.length >= 2) // Ensure valid rows
-                .map(row => ({
-                    name: row[0]?.trim() || "Unknown",  
-                    address: row[6]?.trim() || "No Address" // Correct index for Address
-                }));
-            console.log("Loaded destinations:", destinations);
-        })
-        .catch(error => console.error("Error loading CSV:", error));
+function populateWorkerDropdown() {
+  const select = document.getElementById("worker");
+  workerList.forEach(worker => {
+    const option = document.createElement("option");
+    option.value = worker.id;
+    option.textContent = worker.name;
+    select.appendChild(option);
+  });
 }
 
-// Load CSV data when the page loads
-document.addEventListener("DOMContentLoaded", fetchCSV);
+document.addEventListener("DOMContentLoaded", populateWorkerDropdown);
+</script>
 
-function searchLocation(inputElement) {
-    const query = inputElement.value.toLowerCase();
-    const resultsId = inputElement.id.replace("destination-", "destination-results-");
-    const resultsDropdown = document.getElementById(resultsId);
-    
-    resultsDropdown.innerHTML = "";
 
-    if (query.length < 2) return;
 
-    const filteredDestinations = destinations.filter(place =>
-        place.name.toLowerCase().includes(query) || place.address.toLowerCase().includes(query)
-    );
+  <br><br>
+  <button class="submit-btn" onclick="submitTask()">🛰️ Create Task via API</button>
+  <button onclick="downloadCSVFromForm()">💾 Download CSV for Review</button>
+</div>
 
-    if (filteredDestinations.length === 0) {
-        resultsDropdown.innerHTML = "<option>No matching locations found.</option>";
-        return;
-    }
 
-    filteredDestinations.forEach(place => {
-        const option = document.createElement("option");
-        option.value = place.name;
-        option.textContent = `${place.name} - ${place.address}`; // Display both name & address
 
-        option.addEventListener("click", () => {
-            inputElement.value = place.name;
-            document.getElementById(inputElement.id.replace("destination-", "destination-address-")).value = place.address;
-            resultsDropdown.innerHTML = "";
-        });
 
-        resultsDropdown.appendChild(option);
-    });
-}
 
-function filterDropdown(searchId, dropdownId) {
-    const searchInput = document.getElementById(searchId).value.toLowerCase();
-    const dropdown = document.getElementById(dropdownId);
-    
-    dropdown.innerHTML = ""; // Clear previous options
+<script>
+function addCaseEntry() {
+  const container = document.getElementById("case-entries-container");
+  const count = container.querySelectorAll(".case-entry").length;
 
-    const filteredRecipients = recipients.filter(name => name.toLowerCase().includes(searchInput));
+  if (count >= 6) {
+    alert("You can only add up to 6 case entries.");
+    return;
+  }
 
-    if (filteredRecipients.length === 0) {
-        dropdown.innerHTML = "<option>No matching recipients found.</option>";
-        return;
-    }
+  const entry = document.createElement("div");
+  entry.className = "case-entry";
+  entry.style.display = "flex";
+  entry.style.flexWrap = "wrap";
+  entry.style.gap = "16px";
+  entry.style.marginBottom = "10px";
 
-    filteredRecipients.forEach(name => {
-        const option = document.createElement("option");
-        option.textContent = name;
-        dropdown.appendChild(option);
-    });
-}
+  entry.innerHTML = `
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Case ID</label><br>
+      <input type="text" class="caseId" style="width: 100%;" />
+    </div>
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Reason Code</label><br>
+      <input type="text" class="reasonCode" style="width: 100%;" />
+    </div>
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Trays</label><br>
+      <input type="text" class="trays" style="width: 100%;" />
+    </div>
+    <div style="flex: 1 1 150px; min-width: 150px;">
+      <label>Tubs</label><br>
+      <input type="text" class="tubs" style="width: 100%;" />
+    </div>
+  `;
 
-function addStop() {
-    let stopCount = document.getElementsByClassName("stop").length + 1;
-    const stopsContainer = document.getElementById("stops-container");
-
-    const newStop = document.createElement("div");
-    newStop.classList.add("stop");
-
-    newStop.innerHTML = `
-        <h3>Stop ${stopCount}</h3>
-        
-        <label for="recipient-${stopCount}">Select Recipient</label>
-        <input type="text" id="recipient-search-${stopCount}" class="search-input" placeholder="Type to search..." onkeyup="filterDropdown('recipient-search-${stopCount}', 'recipient-${stopCount}')">
-        <select id="recipient-${stopCount}"></select>
-
-        <label for="destination-${stopCount}">Search Destination</label>
-        <input type="text" id="destination-${stopCount}" placeholder="Type hospital name..." oninput="searchLocation(this)">
-        <select id="destination-results-${stopCount}" size="5"></select>
-        <input type="text" id="destination-address-${stopCount}" placeholder="Address will auto-fill..." readonly>
-
-        <label for="notes-${stopCount}">Delivery Notes (Optional)</label>
-        <textarea id="notes-${stopCount}" rows="4" placeholder="e.g. Use main entrance"></textarea>
-    `;
-
-    stopsContainer.appendChild(newStop);
+  container.appendChild(entry);
 }
 
 function submitTask() {
-    const caseNumber = document.getElementById("case-number").value;
-    const team = document.getElementById("team").value;
-    const taskType = document.querySelector('input[name="taskType"]:checked').value;
-    const recipientDropdown = document.getElementById("recipient-1");
-    const recipient = recipientDropdown.options[recipientDropdown.selectedIndex]?.text || "";
-    const address = document.getElementById("destination-address-1").value;
-    const notes = document.getElementById("notes-1").value;
+  const caseBlocks = Array.from(document.querySelectorAll(".case-entry"));
+  const cases = caseBlocks.map(entry => ({
+    caseId: parseInt(entry.querySelector(".caseId").value),
+    reasonCode: parseInt(entry.querySelector(".reasonCode").value),
+    trays: parseInt(entry.querySelector(".trays").value),
+    tubs: parseInt(entry.querySelector(".tubs").value)
+  }));
 
-    fetch("https://your-api-endpoint.com/create-task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            team,
-            caseNumber,
-            taskType,
-            recipient,
-            address,
-            notes
-        })
-    })
+  let rawPhone = document.getElementById("recipient-phone-1").value.trim();
+  if (!rawPhone.startsWith("+")) {
+    rawPhone = "+1" + rawPhone;
+  }
+
+  const payload = {
+    recipient: document.getElementById("recipient-search-1").value,
+    phone: rawPhone,
+    address: document.getElementById("destination-address-1").value,
+    notes: document.getElementById("notes-1").value,
+    pickupTask: document.querySelector('input[name="taskType"]:checked').value === "pickup",
+    cases,
+    worker: document.getElementById("worker").value
+  };
+
+  console.log("📦 Sending payload:\n", JSON.stringify(payload, null, 2));  // ✅ Now it's safe
+
+  fetch("https://dispatch.azurewebsites.net/api/create_onfleet_task", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            alert("Task created successfully!");
-        } else {
-            alert("Failed to create task.");
-        }
+      if (data.success) {
+        alert("✅ Onfleet task created!");
+        console.log("Tracking URL:", data.data.trackingURL);
+      } else {
+        alert("❌ Task creation failed.");
+        console.error(data);
+      }
     })
     .catch(err => {
-        console.error("Error:", err);
-        alert("Something went wrong.");
+      alert("❌ Error connecting to API.");
+      console.error("Fetch error:", err);
     });
 }
 
+
+function downloadCSVFromForm() {
+  const caseBlocks = Array.from(document.querySelectorAll(".case-entry"));
+  const cases = caseBlocks.map(entry => ({
+    caseId: entry.querySelector(".caseId").value,
+    reasonCode: entry.querySelector(".reasonCode").value,
+    trays: entry.querySelector(".trays").value,
+    tubs: entry.querySelector(".tubs").value
+  }));
+
+  const header = ["recipient", "phone", "address", "notes", "pickupTask", "worker"];
+  const row = [
+    document.getElementById("recipient-search-1").value,
+    document.getElementById("recipient-phone-1").value,
+    document.getElementById("destination-address-1").value,
+    document.getElementById("notes-1").value,
+    document.querySelector('input[name="taskType"]:checked').value,
+    document.getElementById("worker").value
+  ];
+
+  const flatCases = cases.flatMap((c, i) => [
+    `caseId${i+1}`, c.caseId,
+    `reasonCode${i+1}`, c.reasonCode,
+    `trays${i+1}`, c.trays,
+    `tubs${i+1}`, c.tubs
+  ]);
+
+  const allHeader = header.concat(flatCases.filter((_, i) => i % 2 === 0));
+  const allRow = row.concat(flatCases.filter((_, i) => i % 2 === 1));
+
+  const csvContent = "data:text/csv;charset=utf-8," +
+    [allHeader.join(","), allRow.map(v => `"${v}"`).join(",")].join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "onfleet_task_preview.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 </script>
+
+<datalist id="recipient-names"></datalist>
+<datalist id="recipient-phones"></datalist>
+<datalist id="destination-addresses"></datalist>
+
+
+<script>
+let recipientLookup = {};  // Stores name → phone/address mapping
+
+function loadCSVForAutocomplete() {
+  fetch('lookup.csv')
+    .then(response => response.text())
+    .then(text => {
+      const lines = text.trim().split('\n').slice(1); // Skip header
+
+      lines.forEach(line => {
+        const [recipient, phone, ...addressParts] = line.split(',');
+        const address = addressParts.join(',').trim();
+
+        if (recipient && phone && address) {
+          const name = recipient.trim();
+          recipientLookup[name] = {
+            phone: phone.trim(),
+            address: address
+          };
+
+          // Add to datalist
+          const opt = document.createElement("option");
+          opt.value = name;
+          document.getElementById("recipient-names").appendChild(opt);
+        }
+      });
+    });
+}
+
+document.getElementById("recipient-search-1").addEventListener("change", () => {
+  const name = document.getElementById("recipient-search-1").value;
+  const data = recipientLookup[name];
+  if (data) {
+    document.getElementById("recipient-phone-1").value = data.phone;
+    document.getElementById("destination-address-1").value = data.address;
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  populateWorkerDropdown();
+  loadCSVForAutocomplete();
+});
+</script>
+
 
 </body>
 </html>

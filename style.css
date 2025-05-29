@@ -2,8 +2,30 @@ body {
     font-family: Arial, sans-serif;
     margin: 40px auto;
     padding: 20px;
-    max-width: 600px;
+    max-width: 900px;
     background-color: #f0f4f8;
+}
+.header {
+  position: relative;
+  margin-bottom: 30px;
+  height: 60px;
+}
+
+.logo {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+}
+
+.app-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 60px;
+  color: #1e2a39;
 }
 
 .container {
@@ -72,4 +94,21 @@ select, input[type="text"], textarea {
 
 .submit-btn:hover, .add-stop-btn:hover {
     background-color: #00509e;
+}
+
+.case-entry {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.case-entry > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-entry input {
+  width: 100%;
+  box-sizing: border-box;
 }
