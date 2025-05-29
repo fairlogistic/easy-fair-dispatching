@@ -64,7 +64,6 @@
 
 <button type="button" onclick="addCaseEntry()">➕ Add Case Entry</button>
 
-<!-- ✅ ADD THIS -->
 <label for="worker">Select Worker</label>
 <select id="worker"></select>
 
@@ -163,7 +162,7 @@ function submitTask() {
     worker: document.getElementById("worker").value
   };
 
-  console.log("📦 Sending payload:\n", JSON.stringify(payload, null, 2));  // ✅ Now it's safe
+  console.log("📦 Sending payload:\n", JSON.stringify(payload, null, 2));
 
   fetch("https://dispatch.azurewebsites.net/api/create_onfleet_task", {
     method: "POST",
@@ -175,6 +174,7 @@ function submitTask() {
       if (data.success) {
         alert("✅ Onfleet task created!");
         console.log("Tracking URL:", data.data.trackingURL);
+        resetForm(); // 👈 Reset happens here, only after success
       } else {
         alert("❌ Task creation failed.");
         console.error(data);
@@ -267,6 +267,17 @@ function loadCSVForAutocomplete() {
       });
     });
 }
+
+document.getElementById("recipient-search-1").addEventListener("change", () => {
+  const name = document.getElementById("recipient-search-1").value.trim();
+  const data = recipientLookup[name];
+  if (data) {
+    document.getElementById("recipient-phone-1").value = data.phone;
+    document.getElementById("destination-address-1").value = data.address;
+  }
+});
+
+  
 document.getElementById("recipient-phone-1").addEventListener("change", () => {
   let inputPhone = document.getElementById("recipient-phone-1").value.trim();
   if (!inputPhone.startsWith("+")) inputPhone = "+1" + inputPhone;
