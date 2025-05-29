@@ -186,6 +186,36 @@ function submitTask() {
     });
 }
 
+<script>
+function resetForm() {
+  // Reset all input fields
+  document.getElementById("recipient-search-1").value = "";
+  document.getElementById("recipient-phone-1").value = "";
+  document.getElementById("destination-address-1").value = "";
+  document.getElementById("notes-1").value = "";
+  document.querySelector('input[name="taskType"][value="pickup"]').checked = true;
+  document.getElementById("worker").selectedIndex = 0;
+
+  // Remove additional case entries (keep the first one)
+  const container = document.getElementById("case-entries-container");
+  const allEntries = container.querySelectorAll(".case-entry");
+  allEntries.forEach((entry, index) => {
+    if (index === 0) {
+      entry.querySelector(".caseId").value = "";
+      entry.querySelector(".reasonCode").value = "";
+      entry.querySelector(".trays").value = "";
+      entry.querySelector(".tubs").value = "";
+    } else {
+      container.removeChild(entry);
+    }
+  });
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+
+  
 
 function downloadCSVFromForm() {
   const caseBlocks = Array.from(document.querySelectorAll(".case-entry"));
