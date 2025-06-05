@@ -262,21 +262,17 @@ let recipientLookup = {};       // name → {phone, address}
 let phoneLookup = {};           // phone → {name, address}
 
 
-function loadCSVForAutocomplete() {
-  fetch('lookup.csv')
-    .then(response => response.text())
-    .then(text => {
-      const lines = text.trim().split('\n').slice(1); // Skip header
+function loadRecipientsFromAPI() {
+  fetch("https://dispatch.azurewebsites.net/api/get-destinations?")
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(item => {
+        const name = item.name.trim();
+        const phone = item.phone.trim();
+        const address = item.address.trim();
 
-      lines.forEach(line => {
-        const [recipient, phone, ...addressParts] = line.split(',');
-        const address = addressParts.join(',').trim();
-
-        const name = recipient.trim();
-        const phoneClean = phone.trim();
-
-        recipientLookup[name] = { phone: phoneClean, address };
-        phoneLookup[phoneClean] = { name, address };
+        recipientLookup[name] = { phone, address };
+        phoneLookup[phone] = { name, address };
 
         // Add to name datalist
         const opt = document.createElement("option");
@@ -285,11 +281,13 @@ function loadCSVForAutocomplete() {
 
         // Add to phone datalist
         const optPhone = document.createElement("option");
-        optPhone.value = phoneClean;
+        optPhone.value = phone;
         document.getElementById("recipient-phones").appendChild(optPhone);
       });
-    });
+    })
+    .catch(err => console.error("Failed to load recipients:", err));
 }
+
 
 document.getElementById("recipient-search-1").addEventListener("change", () => {
   const name = document.getElementById("recipient-search-1").value.trim();
